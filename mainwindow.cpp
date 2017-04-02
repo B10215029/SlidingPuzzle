@@ -40,6 +40,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 		ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
 		ui->widget->SetIndex(puzzle->getIndexData());
 		ui->widget->update();
+		if (puzzle->checkFinish())
+			ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
 		return true;
 	}
 	return QObject::eventFilter(obj, event);
@@ -47,12 +49,19 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::on_pushButton_clicked()
 {
+	bool ok;
+	if (ui->lineEdit->text().toInt(&ok) <= 1 || !ok) {
+		ui->statusBar->showMessage("Why do not you input a number?", 5000);
+		return;
+	}
 	puzzle = new SlidingPuzzle(ui->lineEdit->text().toInt());
 	puzzle->shuffle(100);
-	ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
 	ui->widget->SetSize(puzzle->getSize(), puzzle->getSize());
+	ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
 	ui->widget->SetIndex(puzzle->getIndexData());
 	ui->widget->update();
+	if (puzzle->checkFinish())
+		ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
 }
 
 void MainWindow::on_puzzle_position_click(int i)
@@ -62,5 +71,19 @@ void MainWindow::on_puzzle_position_click(int i)
 		ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
 		ui->widget->SetIndex(puzzle->getIndexData());
 		ui->widget->update();
+		if (puzzle->checkFinish())
+			ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
+	}
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+	if (puzzle) {
+		puzzle->shuffle(ui->lineEdit_2->text().toInt());
+		ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
+		ui->widget->SetIndex(puzzle->getIndexData());
+		ui->widget->update();
+		if (puzzle->checkFinish())
+			ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
 	}
 }
