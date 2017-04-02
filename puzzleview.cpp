@@ -21,7 +21,7 @@ void PuzzleView::SetSize(int row, int col)
 	index = new int[row * col];
 }
 
-void PuzzleView::SetIndex(int *index)
+void PuzzleView::SetIndex(const int *index)
 {
 	for (int i = 0; i < rowSize * colSize; i++) {
 		this->index[i] = index[i];
@@ -34,18 +34,21 @@ void PuzzleView::paintEvent(QPaintEvent * event)
 	painter.setPen(Qt::blue);
 	painter.setFont(QFont("Arial", 30));
 	if (rowSize == 0 || colSize == 0) {
-		painter.drawText(rect(), Qt::AlignCenter, "Sliding Puzzle");
+		painter.setBrush(Qt::BrushStyle::Dense4Pattern);
 		painter.drawRect(QRect(0, 0, width() - 2, height() - 2));
+		painter.drawText(rect(), Qt::AlignCenter, "Sliding Puzzle");
 	}
 	else {
 		int elementWidth = width() / colSize;
 		int elementHeight = height() / rowSize;
 		QRect r;
 		for (int i = 0; i < rowSize * colSize; i++) {
-			r.setRect(elementWidth * (i % colSize), elementHeight * (i / colSize), elementWidth - 2, elementHeight - 2);
-			if (index[i])
+			if (index[i]) {
+				r.setRect(elementWidth * (i % colSize), elementHeight * (i / colSize), elementWidth - 2, elementHeight - 2);
+				painter.setBrush(Qt::BrushStyle::Dense4Pattern);
+				painter.drawRect(r);
 				painter.drawText(r, Qt::AlignCenter, QString::number(index[i]));
-			painter.drawRect(r);
+			}
 		}
 	}
 }

@@ -25,9 +25,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    puzzleview.cpp
+    puzzleview.cpp \
+    slidingpuzzle.cpp
 
 HEADERS  += mainwindow.h \
-    puzzleview.h
+    puzzleview.h \
+    slidingpuzzle.h
 
 FORMS    += mainwindow.ui

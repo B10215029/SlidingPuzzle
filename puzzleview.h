@@ -9,7 +9,7 @@ class PuzzleView : public QWidget
 public:
 	explicit PuzzleView(QWidget *parent = 0);
 	void SetSize(int row, int col);
-	void SetIndex(int *index);
+	void SetIndex(const int *index);
 protected:
 	void paintEvent(QPaintEvent * event);
 private:

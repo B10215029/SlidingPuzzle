@@ -57,7 +57,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>使用步數：0</string>
+         <string>使用步數: 0</string>
         </property>
        </widget>
       </item>
