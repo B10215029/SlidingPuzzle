@@ -21,6 +21,7 @@ protected:
 
 private slots:
 	void on_pushButton_clicked();
+	void on_puzzle_position_click(int i);
 
 private:
 	Ui::MainWindow *ui;

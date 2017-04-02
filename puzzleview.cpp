@@ -1,5 +1,6 @@
 #include "puzzleview.h"
 #include <QPainter>
+#include <QMouseEvent>
 
 PuzzleView::PuzzleView(QWidget *parent) : QWidget(parent)
 {
@@ -51,4 +52,9 @@ void PuzzleView::paintEvent(QPaintEvent * event)
 			}
 		}
 	}
+}
+
+void PuzzleView::mousePressEvent(QMouseEvent *event)
+{
+	emit(PositionClick((event->x() * colSize / width()) + (event->y() * rowSize / height()) * colSize));
 }

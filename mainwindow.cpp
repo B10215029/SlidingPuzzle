@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 	qApp->installEventFilter(this);
 	puzzle = NULL;
+	connect(ui->widget, SIGNAL(PositionClick(int)), this, SLOT(on_puzzle_position_click(int)));
 }
 
 MainWindow::~MainWindow()
@@ -52,4 +53,14 @@ void MainWindow::on_pushButton_clicked()
 	ui->widget->SetSize(puzzle->getSize(), puzzle->getSize());
 	ui->widget->SetIndex(puzzle->getIndexData());
 	ui->widget->update();
+}
+
+void MainWindow::on_puzzle_position_click(int i)
+{
+	if (puzzle) {
+		puzzle->moveByPos(i);
+		ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
+		ui->widget->SetIndex(puzzle->getIndexData());
+		ui->widget->update();
+	}
 }

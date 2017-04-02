@@ -12,12 +12,13 @@ public:
 	void SetIndex(const int *index);
 protected:
 	void paintEvent(QPaintEvent * event);
+	void mousePressEvent(QMouseEvent *event);
 private:
 	int rowSize;
 	int colSize;
 	int *index;
 signals:
-
+	void PositionClick(int i);
 public slots:
 };
 

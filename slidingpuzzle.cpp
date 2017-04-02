@@ -109,7 +109,7 @@ bool SlidingPuzzle::moveByPos(int i)
 	else {
 		int x, y;
 		Index2XY(i, &x, &y);
-		if (abs(zeroPositionX - x) == 1 || abs(zeroPositionY - y) == 1 ) {
+		if ((abs(zeroPositionX - x) == 1 && (zeroPositionY == y)) || ((zeroPositionX == x) && abs(zeroPositionY - y) == 1)) {
 			indexData[XY2Index(zeroPositionX, zeroPositionY)] = indexData[i];
 			indexData[i] = 0;
 			zeroPositionX = x;
