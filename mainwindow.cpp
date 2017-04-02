@@ -47,6 +47,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 void MainWindow::on_pushButton_clicked()
 {
 	puzzle = new SlidingPuzzle(ui->lineEdit->text().toInt());
+	puzzle->shuffle(100);
 	ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
 	ui->widget->SetSize(puzzle->getSize(), puzzle->getSize());
 	ui->widget->SetIndex(puzzle->getIndexData());

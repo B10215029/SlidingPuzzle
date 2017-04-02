@@ -1,4 +1,5 @@
 #include "slidingpuzzle.h"
+#include <cstdlib>
 
 SlidingPuzzle::SlidingPuzzle(int row)
 {
@@ -19,7 +20,29 @@ void SlidingPuzzle::reset()
 
 void SlidingPuzzle::shuffle(int step)
 {
+	bool moveSuccess = false;
+	for (int i = 0; i < step; i += moveSuccess?1:0) {
+		int randDir = std::rand() % 4;
+		if (randDir == 0)
+			moveSuccess = moveUp();
+		else if (randDir == 1)
+			moveSuccess = moveDown();
+		else if (randDir == 2)
+			moveSuccess = moveLeft();
+		else if (randDir == 3)
+			moveSuccess = moveRight();
+	}
+	totalStep = 0;
+}
 
+bool SlidingPuzzle::checkFinish()
+{
+	for (int i = 0; i < rowSize * rowSize - 1; i++) {
+		if (indexData[i] != i + 1) {
+			return false;
+		}
+	}
+	return true;
 }
 
 bool SlidingPuzzle::moveUp()
@@ -75,6 +98,28 @@ bool SlidingPuzzle::moveRight()
 		zeroPositionX--;
 		totalStep++;
 		return true;
+	}
+}
+
+bool SlidingPuzzle::moveByPos(int i)
+{
+	if (i < 0 || i >= rowSize * rowSize) {
+		return false;
+	}
+	else {
+		int x, y;
+		Index2XY(i, &x, &y);
+		if (abs(zeroPositionX - x) == 1 || abs(zeroPositionY - y) == 1 ) {
+			indexData[XY2Index(zeroPositionX, zeroPositionY)] = indexData[i];
+			indexData[i] = 0;
+			zeroPositionX = x;
+			zeroPositionY = y;
+			totalStep++;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
 

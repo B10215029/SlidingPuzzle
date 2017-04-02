@@ -8,10 +8,12 @@ public:
 	SlidingPuzzle(int row = 4);
 	void reset();
 	void shuffle(int step);
+	bool checkFinish();
 	bool moveUp();
 	bool moveDown();
 	bool moveLeft();
 	bool moveRight();
+	bool moveByPos(int i);
 	const int *getIndexData();
 	int getSize();
 
