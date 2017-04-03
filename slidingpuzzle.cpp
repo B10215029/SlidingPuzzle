@@ -10,8 +10,8 @@ SlidingPuzzle::SlidingPuzzle(int row)
 
 void SlidingPuzzle::reset()
 {
-	for (int i = 0; i < rowSize * rowSize - 1; i++) {
-		indexData[i] = i + 1;
+    for (int i = 0; i < rowSize * rowSize - 1; i++) {
+        indexData[i] = i + 1;
 	}
 	indexData[rowSize * rowSize - 1] = 0;
 	zeroPositionX = zeroPositionY = rowSize - 1;
@@ -37,7 +37,7 @@ void SlidingPuzzle::shuffle(int step)
 
 bool SlidingPuzzle::checkFinish()
 {
-	for (int i = 0; i < rowSize * rowSize - 1; i++) {
+    for (int i = 0; i < rowSize * rowSize - 1; i++) {
 		if (indexData[i] != i + 1) {
 			return false;
 		}
