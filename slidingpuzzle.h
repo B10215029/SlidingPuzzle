@@ -6,6 +6,8 @@ class SlidingPuzzle
 {
 public:
 	SlidingPuzzle(int row = 4);
+	SlidingPuzzle(SlidingPuzzle &oldPuzzle);
+	~SlidingPuzzle();
 	void reset();
 	void shuffle(int step);
 	bool checkFinish();

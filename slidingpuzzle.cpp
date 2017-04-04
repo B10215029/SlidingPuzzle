@@ -8,6 +8,23 @@ SlidingPuzzle::SlidingPuzzle(int row)
 	reset();
 }
 
+SlidingPuzzle::SlidingPuzzle(SlidingPuzzle &oldPuzzle)
+{
+	this->rowSize = oldPuzzle.rowSize;
+	this->zeroPositionX = oldPuzzle.zeroPositionX;
+	this->zeroPositionY = oldPuzzle.zeroPositionY;
+	this->totalStep = oldPuzzle.totalStep;
+	this->indexData = new int[rowSize * rowSize];
+	for (int i = 0; i < rowSize * rowSize; i++) {
+		this->indexData[i] = oldPuzzle.indexData[i];
+	}
+}
+
+SlidingPuzzle::~SlidingPuzzle()
+{
+	delete[] indexData;
+}
+
 void SlidingPuzzle::reset() // reset to complete state
 {
     for (int i = 0; i < rowSize * rowSize - 1; i++) {
