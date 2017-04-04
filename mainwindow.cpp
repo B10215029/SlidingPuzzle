@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	qApp->installEventFilter(this);
 	puzzle = NULL;
 	connect(ui->widget, SIGNAL(PositionClick(int)), this, SLOT(on_puzzle_position_click(int)));
+    aco = NULL;
 }
 
 MainWindow::~MainWindow()
@@ -62,6 +63,8 @@ void MainWindow::on_pushButton_clicked()
 	ui->widget->update();
 	if (puzzle->checkFinish())
 		ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
+
+    aco = new SlidingPuzzleACO(puzzle);
 }
 
 void MainWindow::on_puzzle_position_click(int i)

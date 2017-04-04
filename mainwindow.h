@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "slidingpuzzle.h"
+//#include "slidingpuzzle.h"
+#include "ACO/SlidingPuzzleACO.h"
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +29,7 @@ private slots:
 private:
 	Ui::MainWindow *ui;
 	SlidingPuzzle *puzzle;
+    SlidingPuzzleACO *aco;
 };
 
 #endif // MAINWINDOW_H

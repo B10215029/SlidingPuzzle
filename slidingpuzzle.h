@@ -23,7 +23,7 @@ private:
 	int XY2Index(int x, int y);
 	void Index2XY(int i, int *x, int *y);
 	int rowSize;
-	int *indexData;
+    int *indexData;
 	int zeroPositionX;
 	int zeroPositionY;
 };

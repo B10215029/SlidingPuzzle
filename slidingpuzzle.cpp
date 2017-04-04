@@ -8,7 +8,7 @@ SlidingPuzzle::SlidingPuzzle(int row)
 	reset();
 }
 
-void SlidingPuzzle::reset()
+void SlidingPuzzle::reset() // reset to complete state
 {
     for (int i = 0; i < rowSize * rowSize - 1; i++) {
         indexData[i] = i + 1;
