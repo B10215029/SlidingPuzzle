@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-//#include "slidingpuzzle.h"
+#include "slidingpuzzle.h"
 #include "ACO/SlidingPuzzleACO.h"
 
 namespace Ui {

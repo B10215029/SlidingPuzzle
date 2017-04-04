@@ -1,8 +1,5 @@
 // General ACO
-//#pragma once
-
-#ifndef ACO_H
-#define ACO_H
+#pragma once
 
 #include <vector>
 #include <cstdlib>
@@ -17,8 +14,6 @@ template<typename T>
 class ACO
 {
 public:
-    ACO(int n, float a, float b, float r, float q, int m, float e=0.01f);
-    ACO();
     ~ACO();
 
     typedef struct PathInfo
@@ -29,17 +24,18 @@ public:
         T to;
     } PathInfo;
 
-    virtual void start(T from, bool mc=true); // default MONTE_CARLO is true
-    virtual vector<PathInfo> shortestPath() { return shortest_path; }
+    void init(int n, float a, float b, float r, float q, int m, float e=0.01f);
+    void start(T from, bool mc=true); // default MONTE_CARLO is true
+    vector<PathInfo> shortestPath() { return shortest_path; }
 
 protected:
-    int number_of_ants;
-    float alpha;
-    float beta;
-    float pheromone_left_ratio;
-    float pheromone_left_per_ant;
+    int number_of_ants = 4;
+    float alpha = 2;
+    float beta = 2;
+    float pheromone_left_ratio = 0.5f;
+    float pheromone_left_per_ant = 5;
 
-    int max_iteration;
+    int max_iteration = 100;
     int current_iteration = 0;
 
     float last_min_path = 0;
@@ -50,12 +46,10 @@ protected:
     vector<PathInfo> shortest_path;
     vector<PathInfo> social_influence;
 
-    virtual bool converge(float current_min_path); // min path is general usage (tree depth)
+    bool converge(float current_min_path); // min path is general usage (tree depth)
     virtual bool isComplete(T to) = 0; // compare with the complete status
-    virtual T evaluate(T from); // depends on social_influence
+    T evaluate(T from); // depends on social_influence
     virtual vector<T> toStates(T from) = 0; // combine to evaluate (expand tree)
-    virtual float visibility(T from, T to) { return 1; } // depends on application, default is 1
-    virtual void updatePheromone(vector< vector<PathInfo> > & all_ants_walks);
+    float visibility(T from, T to) { return 1; } // depends on application, default is 1
+    void updatePheromone(vector< vector<PathInfo> > & all_ants_walks);
 };
-
-#endif
