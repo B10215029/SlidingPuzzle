@@ -8,7 +8,7 @@ SlidingPuzzle::SlidingPuzzle(int row)
 	reset();
 }
 
-SlidingPuzzle::SlidingPuzzle(SlidingPuzzle &oldPuzzle)
+SlidingPuzzle::SlidingPuzzle(const SlidingPuzzle &oldPuzzle)
 {
 	this->rowSize = oldPuzzle.rowSize;
 	this->zeroPositionX = oldPuzzle.zeroPositionX;
@@ -23,6 +23,19 @@ SlidingPuzzle::SlidingPuzzle(SlidingPuzzle &oldPuzzle)
 SlidingPuzzle::~SlidingPuzzle()
 {
 	delete[] indexData;
+}
+
+SlidingPuzzle& SlidingPuzzle::operator=(const SlidingPuzzle &oldPuzzle)
+{
+	this->rowSize = oldPuzzle.rowSize;
+	this->zeroPositionX = oldPuzzle.zeroPositionX;
+	this->zeroPositionY = oldPuzzle.zeroPositionY;
+	this->totalStep = oldPuzzle.totalStep;
+	this->indexData = new int[rowSize * rowSize];
+	for (int i = 0; i < rowSize * rowSize; i++) {
+		this->indexData[i] = oldPuzzle.indexData[i];
+	}
+	return *this;
 }
 
 void SlidingPuzzle::reset() // reset to complete state

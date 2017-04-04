@@ -6,8 +6,9 @@ class SlidingPuzzle
 {
 public:
 	SlidingPuzzle(int row = 4);
-	SlidingPuzzle(SlidingPuzzle &oldPuzzle);
+	SlidingPuzzle(const SlidingPuzzle &oldPuzzle);
 	~SlidingPuzzle();
+	SlidingPuzzle& operator=(const SlidingPuzzle &oldPuzzle);
 	void reset();
 	void shuffle(int step);
 	bool checkFinish();
