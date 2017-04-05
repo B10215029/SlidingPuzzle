@@ -29,12 +29,14 @@ SOURCES += main.cpp\
 	puzzleview.cpp \
 	slidingpuzzle.cpp \
 #	ACO/ACO.cpp \
-	ACO/SlidingPuzzleACO.cpp
+	ACO/SlidingPuzzleACO.cpp \
+    eventlog.cpp
 
 HEADERS += mainwindow.h \
 	puzzleview.h \
 	slidingpuzzle.h \
 	ACO/ACO.hpp \
 	ACO/SlidingPuzzleACO.h \
+    eventlog.h
 
 FORMS += mainwindow.ui

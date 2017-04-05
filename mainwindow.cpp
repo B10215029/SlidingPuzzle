@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QKeyEvent>
+#include <eventlog.h>
+
+//static EventLog mlog;
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -11,6 +14,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	puzzle = NULL;
 	connect(ui->widget, SIGNAL(PositionClick(int)), this, SLOT(on_puzzle_position_click(int)));
 	aco = new SlidingPuzzleACO();
+
+//	mlog.write("MainWindow::MainWindow()");
+//	mlog.print();
 }
 
 MainWindow::~MainWindow()
