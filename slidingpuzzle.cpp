@@ -1,5 +1,8 @@
 #include "slidingpuzzle.h"
 #include <cstdlib>
+#include <iostream>
+
+using namespace std;
 
 SlidingPuzzle::SlidingPuzzle(int row)
 {
@@ -10,6 +13,7 @@ SlidingPuzzle::SlidingPuzzle(int row)
 
 SlidingPuzzle::SlidingPuzzle(const SlidingPuzzle &oldPuzzle)
 {
+	printf("%x constructor copy from %x\n", this, oldPuzzle);
 	this->rowSize = oldPuzzle.rowSize;
 	this->zeroPositionX = oldPuzzle.zeroPositionX;
 	this->zeroPositionY = oldPuzzle.zeroPositionY;
@@ -27,6 +31,7 @@ SlidingPuzzle::~SlidingPuzzle()
 
 SlidingPuzzle& SlidingPuzzle::operator=(const SlidingPuzzle &oldPuzzle)
 {
+	printf("%x assign to %x\n", oldPuzzle, this);
 	this->rowSize = oldPuzzle.rowSize;
 	this->zeroPositionX = oldPuzzle.zeroPositionX;
 	this->zeroPositionY = oldPuzzle.zeroPositionY;
@@ -38,10 +43,39 @@ SlidingPuzzle& SlidingPuzzle::operator=(const SlidingPuzzle &oldPuzzle)
 	return *this;
 }
 
+SlidingPuzzle* SlidingPuzzle::operator=(const SlidingPuzzle *oldPuzzle)
+{
+	printf("%x pointer copy to %x\n", oldPuzzle, this);
+	this->rowSize = oldPuzzle->rowSize;
+	this->zeroPositionX = oldPuzzle->zeroPositionX;
+	this->zeroPositionY = oldPuzzle->zeroPositionY;
+	this->totalStep = oldPuzzle->totalStep;
+	this->indexData = new int[rowSize * rowSize];
+	for (int i = 0; i < rowSize * rowSize; i++) {
+		this->indexData[i] = oldPuzzle->indexData[i];
+	}
+	return this;
+}
+
+bool SlidingPuzzle::operator==(SlidingPuzzle &oldPuzzle) const
+{
+	printf("== overload\n");
+	if (this->rowSize == oldPuzzle.rowSize &&
+			this->zeroPositionX == oldPuzzle.zeroPositionX &&
+			this->zeroPositionY == oldPuzzle.zeroPositionY) {
+		for (int i = 0; i < rowSize * rowSize; i++)
+			if (this->indexData[i] != oldPuzzle.indexData[i])
+				return false;
+	}
+	else
+		return false;
+	return true;
+}
+
 void SlidingPuzzle::reset() // reset to complete state
 {
-    for (int i = 0; i < rowSize * rowSize - 1; i++) {
-        indexData[i] = i + 1;
+	for (int i = 0; i < rowSize * rowSize - 1; i++) {
+		indexData[i] = i + 1;
 	}
 	indexData[rowSize * rowSize - 1] = 0;
 	zeroPositionX = zeroPositionY = rowSize - 1;
@@ -67,7 +101,7 @@ void SlidingPuzzle::shuffle(int step)
 
 bool SlidingPuzzle::checkFinish()
 {
-    for (int i = 0; i < rowSize * rowSize - 1; i++) {
+	for (int i = 0; i < rowSize * rowSize - 1; i++) {
 		if (indexData[i] != i + 1) {
 			return false;
 		}

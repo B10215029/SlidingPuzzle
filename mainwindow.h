@@ -29,7 +29,7 @@ private slots:
 private:
 	Ui::MainWindow *ui;
 	SlidingPuzzle *puzzle;
-    SlidingPuzzleACO *aco;
+	SlidingPuzzleACO *aco;
 };
 
 #endif // MAINWINDOW_H

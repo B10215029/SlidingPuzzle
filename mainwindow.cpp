@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QKeyEvent>
-#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -11,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	qApp->installEventFilter(this);
 	puzzle = NULL;
 	connect(ui->widget, SIGNAL(PositionClick(int)), this, SLOT(on_puzzle_position_click(int)));
-    aco = NULL;
+	aco = NULL;
 }
 
 MainWindow::~MainWindow()
@@ -64,7 +63,11 @@ void MainWindow::on_pushButton_clicked()
 	if (puzzle->checkFinish())
 		ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
 
-    aco = new SlidingPuzzleACO(puzzle);
+	aco = new SlidingPuzzleACO();
+	aco->init(4, 2, 2, 0.5f, 5, 10);
+	aco->start(puzzle);
+	vector<ACO<SlidingPuzzle *>::PathInfo> path = aco->shortestPath();
+	printf("sp size: %d\n", path.size());
 }
 
 void MainWindow::on_puzzle_position_click(int i)

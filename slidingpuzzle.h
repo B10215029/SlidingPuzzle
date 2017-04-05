@@ -1,7 +1,6 @@
 #ifndef SLIDINGPUZZLE_H
 #define SLIDINGPUZZLE_H
 
-
 class SlidingPuzzle
 {
 public:
@@ -9,6 +8,8 @@ public:
 	SlidingPuzzle(const SlidingPuzzle &oldPuzzle);
 	~SlidingPuzzle();
 	SlidingPuzzle& operator=(const SlidingPuzzle &oldPuzzle);
+	SlidingPuzzle* operator=(const SlidingPuzzle *oldPuzzle);
+	bool operator==(SlidingPuzzle &oldPuzzle) const;
 	void reset();
 	void shuffle(int step);
 	bool checkFinish();
@@ -26,7 +27,7 @@ private:
 	int XY2Index(int x, int y);
 	void Index2XY(int i, int *x, int *y);
 	int rowSize;
-    int *indexData;
+	int *indexData;
 	int zeroPositionX;
 	int zeroPositionY;
 };
