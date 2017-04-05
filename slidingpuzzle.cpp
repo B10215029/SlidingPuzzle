@@ -13,7 +13,7 @@ SlidingPuzzle::SlidingPuzzle(int row)
 
 SlidingPuzzle::SlidingPuzzle(const SlidingPuzzle &oldPuzzle)
 {
-	printf("%x constructor copy from %x\n", this, oldPuzzle);
+//	printf("%x constructor copy from %x\n", this, oldPuzzle);
 	this->rowSize = oldPuzzle.rowSize;
 	this->zeroPositionX = oldPuzzle.zeroPositionX;
 	this->zeroPositionY = oldPuzzle.zeroPositionY;
@@ -31,7 +31,7 @@ SlidingPuzzle::~SlidingPuzzle()
 
 SlidingPuzzle& SlidingPuzzle::operator=(const SlidingPuzzle &oldPuzzle)
 {
-	printf("%x assign to %x\n", oldPuzzle, this);
+//	printf("%x assign to %x\n", oldPuzzle, this);
 	this->rowSize = oldPuzzle.rowSize;
 	this->zeroPositionX = oldPuzzle.zeroPositionX;
 	this->zeroPositionY = oldPuzzle.zeroPositionY;
@@ -43,23 +43,9 @@ SlidingPuzzle& SlidingPuzzle::operator=(const SlidingPuzzle &oldPuzzle)
 	return *this;
 }
 
-SlidingPuzzle* SlidingPuzzle::operator=(const SlidingPuzzle *oldPuzzle)
-{
-	printf("%x pointer copy to %x\n", oldPuzzle, this);
-	this->rowSize = oldPuzzle->rowSize;
-	this->zeroPositionX = oldPuzzle->zeroPositionX;
-	this->zeroPositionY = oldPuzzle->zeroPositionY;
-	this->totalStep = oldPuzzle->totalStep;
-	this->indexData = new int[rowSize * rowSize];
-	for (int i = 0; i < rowSize * rowSize; i++) {
-		this->indexData[i] = oldPuzzle->indexData[i];
-	}
-	return this;
-}
-
 bool SlidingPuzzle::operator==(SlidingPuzzle &oldPuzzle) const
 {
-	printf("== overload\n");
+//	printf("== overload\n");
 	if (this->rowSize == oldPuzzle.rowSize &&
 			this->zeroPositionX == oldPuzzle.zeroPositionX &&
 			this->zeroPositionY == oldPuzzle.zeroPositionY) {
@@ -70,6 +56,31 @@ bool SlidingPuzzle::operator==(SlidingPuzzle &oldPuzzle) const
 	else
 		return false;
 	return true;
+}
+
+bool SlidingPuzzle::operator==(const SlidingPuzzle &oldPuzzle) const
+{
+//	printf("== overload\n");
+	if (this->rowSize == oldPuzzle.rowSize &&
+			this->zeroPositionX == oldPuzzle.zeroPositionX &&
+			this->zeroPositionY == oldPuzzle.zeroPositionY) {
+		for (int i = 0; i < rowSize * rowSize; i++)
+			if (this->indexData[i] != oldPuzzle.indexData[i])
+				return false;
+	}
+	else
+		return false;
+	return true;
+}
+
+bool SlidingPuzzle::operator!=(SlidingPuzzle &oldPuzzle) const
+{
+	return !(*this == oldPuzzle);
+}
+
+bool SlidingPuzzle::operator!=(const SlidingPuzzle &oldPuzzle) const
+{
+	return !(*this == oldPuzzle);
 }
 
 void SlidingPuzzle::reset() // reset to complete state
