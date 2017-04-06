@@ -8,13 +8,11 @@ public:
 	SlidingPuzzle(const SlidingPuzzle &oldPuzzle);
 	~SlidingPuzzle();
 	SlidingPuzzle& operator=(const SlidingPuzzle &oldPuzzle);
-	bool operator==(SlidingPuzzle &oldPuzzle) const;
 	bool operator==(const SlidingPuzzle &oldPuzzle) const;
-	bool operator!=(SlidingPuzzle &oldPuzzle) const;
 	bool operator!=(const SlidingPuzzle &oldPuzzle) const;
 	void reset();
 	void shuffle(int step);
-	bool checkFinish();
+	bool checkFinish() const;
 	bool moveUp();
 	bool moveDown();
 	bool moveLeft();

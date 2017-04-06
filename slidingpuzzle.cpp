@@ -43,21 +43,6 @@ SlidingPuzzle& SlidingPuzzle::operator=(const SlidingPuzzle &oldPuzzle)
 	return *this;
 }
 
-bool SlidingPuzzle::operator==(SlidingPuzzle &oldPuzzle) const
-{
-//	printf("== overload\n");
-	if (this->rowSize == oldPuzzle.rowSize &&
-			this->zeroPositionX == oldPuzzle.zeroPositionX &&
-			this->zeroPositionY == oldPuzzle.zeroPositionY) {
-		for (int i = 0; i < rowSize * rowSize; i++)
-			if (this->indexData[i] != oldPuzzle.indexData[i])
-				return false;
-	}
-	else
-		return false;
-	return true;
-}
-
 bool SlidingPuzzle::operator==(const SlidingPuzzle &oldPuzzle) const
 {
 //	printf("== overload\n");
@@ -71,11 +56,6 @@ bool SlidingPuzzle::operator==(const SlidingPuzzle &oldPuzzle) const
 	else
 		return false;
 	return true;
-}
-
-bool SlidingPuzzle::operator!=(SlidingPuzzle &oldPuzzle) const
-{
-	return !(*this == oldPuzzle);
 }
 
 bool SlidingPuzzle::operator!=(const SlidingPuzzle &oldPuzzle) const
@@ -110,8 +90,10 @@ void SlidingPuzzle::shuffle(int step)
 	totalStep = 0;
 }
 
-bool SlidingPuzzle::checkFinish()
+bool SlidingPuzzle::checkFinish() const
 {
+	if ((zeroPositionX != rowSize - 1) && (zeroPositionY != rowSize - 1))
+		return false;
 	for (int i = 0; i < rowSize * rowSize - 1; i++) {
 		if (indexData[i] != i + 1) {
 			return false;
