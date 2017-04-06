@@ -1,33 +1,42 @@
 #include "eventlog.h"
-#include <ctime>
-#include <iostream>
+#include <string>
 
-EventLog::EventLog()
+EventLog *EventLog::singleton = NULL;
+std::time_t EventLog::timeInfo = std::time(NULL);
+char EventLog::timeToStrBuffer[100];
+
+bool EventLog::init(std::ostream &outputStream)
 {
-	write("EventLog::EventLog()");
-	print();
+	if (!singleton) {
+		singleton = new EventLog(outputStream);
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
-void EventLog::write(string msg, bool use_time)
+void EventLog::log(const std::string msg, const std::string type)
 {
-	time_t t = time(0);
-	struct tm *now = localtime(& t);
-	log << (now->tm_year + 1900) << "/" << (now->tm_mon + 1) << "/" << now->tm_mday << " "
-		<< now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec << " "
-		<< msg << endl;
+	if (singleton) {
+		singleton->write(msg, type);
+	}
 }
 
-bool EventLog::save(string path, string file_name)
-{
-
-}
-
-bool EventLog::save()
+EventLog::EventLog(std::ostream &outputStream): outputStream(outputStream), writeTime(true), writeType(true)
 {
 
 }
 
-bool EventLog::print()
+void EventLog::write(const std::string msg, const std::string type)
 {
-	cout << log.str();
+	if (writeType) {
+		outputStream << "[" << type << "]";
+	}
+	if (writeTime) {
+		timeInfo = std::time(NULL);
+		std::strftime(timeToStrBuffer, sizeof(timeToStrBuffer), "%F %T", std::localtime(&timeInfo));
+		outputStream << "[" << timeToStrBuffer << "]";
+	}
+	outputStream << msg << std::endl;
 }

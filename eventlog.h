@@ -1,21 +1,24 @@
 #ifndef EVENTLOG_H
 #define EVENTLOG_H
 
-#include <sstream>
-
-using namespace std;
+#include <iostream>
+#include <ctime>
 
 class EventLog
 {
 public:
-	EventLog();
-	void write(string msg, bool use_time=true);
-	bool save(string path, string file_name);
-	bool save(); // default path and name
-	bool print(); // print to screen
+	static bool init(std::ostream &outputStream = std::cout);
+	static void log(const std::string msg, const std::string type = std::string("UNKNOWN"));
+	EventLog(std::ostream &outputStream);
+	void write(const std::string msg, const std::string type = std::string("UNKNOWN"));
 
 private:
-	stringstream log;
+	static EventLog *singleton;
+	static std::time_t timeInfo;
+	static char timeToStrBuffer[100];
+	std::ostream &outputStream;
+	bool writeTime;
+	bool writeType;
 };
 
 #endif // EVENTLOG_H
