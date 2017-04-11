@@ -18,8 +18,8 @@ public:
 	bool moveLeft();
 	bool moveRight();
 	bool moveByPos(int i);
-	const int *getIndexData();
-	int getSize();
+	const int *getIndexData() const;
+	int getSize() const;
 
 	int totalStep;
 

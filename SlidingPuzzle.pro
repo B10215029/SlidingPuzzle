@@ -30,13 +30,15 @@ SOURCES += main.cpp\
 	slidingpuzzle.cpp \
 #	ACO/ACO.cpp \
 	ACO/SlidingPuzzleACO.cpp \
-    eventlog.cpp
+    eventlog.cpp \
+    bestfirstsearch.cpp
 
 HEADERS += mainwindow.h \
 	puzzleview.h \
 	slidingpuzzle.h \
 	ACO/ACO.hpp \
 	ACO/SlidingPuzzleACO.h \
-    eventlog.h
+    eventlog.h \
+    bestfirstsearch.h
 
 FORMS += mainwindow.ui

@@ -180,12 +180,12 @@ bool SlidingPuzzle::moveByPos(int i)
 	}
 }
 
-const int* SlidingPuzzle::getIndexData()
+const int* SlidingPuzzle::getIndexData() const
 {
 	return indexData;
 }
 
-int SlidingPuzzle::getSize()
+int SlidingPuzzle::getSize() const
 {
 	return rowSize;
 }
