@@ -4,9 +4,8 @@
 
 using namespace std;
 
-SlidingPuzzle::SlidingPuzzle(int row)
+SlidingPuzzle::SlidingPuzzle(int row) : rowSize(row), isRecordStep(true)
 {
-	rowSize = row;
 	indexData = new int[rowSize * rowSize];
 	reset();
 }
@@ -14,14 +13,7 @@ SlidingPuzzle::SlidingPuzzle(int row)
 SlidingPuzzle::SlidingPuzzle(const SlidingPuzzle &oldPuzzle)
 {
 //	printf("%x constructor copy from %x\n", this, oldPuzzle);
-	this->rowSize = oldPuzzle.rowSize;
-	this->zeroPositionX = oldPuzzle.zeroPositionX;
-	this->zeroPositionY = oldPuzzle.zeroPositionY;
-	this->totalStep = oldPuzzle.totalStep;
-	this->indexData = new int[rowSize * rowSize];
-	for (int i = 0; i < rowSize * rowSize; i++) {
-		this->indexData[i] = oldPuzzle.indexData[i];
-	}
+	*this = oldPuzzle;
 }
 
 SlidingPuzzle::~SlidingPuzzle()
@@ -40,6 +32,8 @@ SlidingPuzzle& SlidingPuzzle::operator=(const SlidingPuzzle &oldPuzzle)
 	for (int i = 0; i < rowSize * rowSize; i++) {
 		this->indexData[i] = oldPuzzle.indexData[i];
 	}
+	this->isRecordStep = oldPuzzle.isRecordStep;
+	this->step = oldPuzzle.step;
 	return *this;
 }
 
@@ -71,11 +65,14 @@ void SlidingPuzzle::reset() // reset to complete state
 	indexData[rowSize * rowSize - 1] = 0;
 	zeroPositionX = zeroPositionY = rowSize - 1;
 	totalStep = 0;
+	step.clear();
 }
 
 void SlidingPuzzle::shuffle(int step)
 {
 	bool moveSuccess = false;
+	bool isReco = isRecordStep;
+	isRecordStep = false;
 	for (int i = 0; i < step; i += moveSuccess?1:0) {
 		int randDir = std::rand() % 4;
 		if (randDir == 0)
@@ -87,7 +84,9 @@ void SlidingPuzzle::shuffle(int step)
 		else if (randDir == 3)
 			moveSuccess = moveRight();
 	}
+	isRecordStep = isReco;
 	totalStep = 0;
+	this->step.clear();
 }
 
 bool SlidingPuzzle::checkFinish() const
@@ -112,6 +111,7 @@ bool SlidingPuzzle::moveUp()
 		indexData[XY2Index(zeroPositionX, zeroPositionY + 1)] = 0;
 		zeroPositionY++;
 		totalStep++;
+		RecordStep(0);
 		return true;
 	}
 }
@@ -126,6 +126,7 @@ bool SlidingPuzzle::moveDown()
 		indexData[XY2Index(zeroPositionX, zeroPositionY - 1)] = 0;
 		zeroPositionY--;
 		totalStep++;
+		RecordStep(1);
 		return true;
 	}
 }
@@ -140,6 +141,7 @@ bool SlidingPuzzle::moveLeft()
 		indexData[XY2Index(zeroPositionX + 1, zeroPositionY)] = 0;
 		zeroPositionX++;
 		totalStep++;
+		RecordStep(2);
 		return true;
 	}
 }
@@ -154,6 +156,7 @@ bool SlidingPuzzle::moveRight()
 		indexData[XY2Index(zeroPositionX - 1, zeroPositionY)] = 0;
 		zeroPositionX--;
 		totalStep++;
+		RecordStep(3);
 		return true;
 	}
 }
@@ -169,9 +172,12 @@ bool SlidingPuzzle::moveByPos(int i)
 		if ((abs(zeroPositionX - x) == 1 && (zeroPositionY == y)) || ((zeroPositionX == x) && abs(zeroPositionY - y) == 1)) {
 			indexData[XY2Index(zeroPositionX, zeroPositionY)] = indexData[i];
 			indexData[i] = 0;
+			int action = (zeroPositionX - x) * (zeroPositionX - x) * 2 + ((zeroPositionX - x) + 1) / 2 + ((zeroPositionY - y) + 1) / 2;
+			std::cout << "action:" << action <<std::endl;
 			zeroPositionX = x;
 			zeroPositionY = y;
 			totalStep++;
+			RecordStep(action);
 			return true;
 		}
 		else {
@@ -188,6 +194,52 @@ const int* SlidingPuzzle::getIndexData() const
 int SlidingPuzzle::getSize() const
 {
 	return rowSize;
+}
+
+void SlidingPuzzle::RecordStep(char action)
+{
+	if (!isRecordStep)
+		return;
+	if (step.size() == totalStep - 1) {
+		step.push_back(action);
+	}
+	else {
+		step.erase(step.begin() + totalStep, step.end());
+		step.push_back(action);
+	}
+}
+
+bool SlidingPuzzle::Undo()
+{
+	if (!isRecordStep || totalStep == 0)
+		return false;
+	isRecordStep = false;
+	if (step[totalStep - 1] == 0)
+		moveDown();
+	else if (step[totalStep - 1] == 1)
+		moveUp();
+	else if (step[totalStep - 1] == 2)
+		moveRight();
+	else if (step[totalStep - 1] == 3)
+		moveLeft();
+	isRecordStep = true;
+	totalStep -= 2;
+}
+
+bool SlidingPuzzle::Redo()
+{
+	if (!isRecordStep || totalStep == step.size())
+		return false;
+	isRecordStep = false;
+	if (step[totalStep] == 0)
+		moveUp();
+	else if (step[totalStep] == 1)
+		moveDown();
+	else if (step[totalStep] == 2)
+		moveLeft();
+	else if (step[totalStep] == 3)
+		moveRight();
+	isRecordStep = true;
 }
 
 int SlidingPuzzle::XY2Index(int x, int y)

@@ -1,5 +1,6 @@
 #include "bestfirstsearch.h"
 #include <iostream>
+#include <algorithm>
 
 BestFirstSearch::BestFirstSearch(SlidingPuzzle &puzzle)
 {
@@ -15,7 +16,6 @@ BestFirstSearch::BestFirstSearch(SlidingPuzzle &puzzle)
 			pastPuzzle.push_back(puzzleQueue.top());
 			puzzleQueue.pop();
 		}
-//		std::cout << pastPuzzle.back().getIndexData()[0] << pastPuzzle.back().getIndexData()[1] << pastPuzzle.back().getIndexData()[2] << pastPuzzle.back().getIndexData()[3] << std::endl;
 		std::cout << SlidingPuzzleHeurestic(pastPuzzle.back()) << ": ";
 		if (pastPuzzle.back().checkFinish()) {
 			puzzle = pastPuzzle.back();
@@ -37,7 +37,7 @@ BestFirstSearch::BestFirstSearch(SlidingPuzzle &puzzle)
 		if(puzzleRight.moveRight() && std::find(pastPuzzle.begin(), pastPuzzle.end(), puzzleRight) == pastPuzzle.end()) {
 			puzzleQueue.push(puzzleRight);
 		}
-		std::cout << "find:" << i++ << std::endl;
+		std::cout << "state:" << i++ << std::endl;
 	}
 	std::cout << SlidingPuzzleHeurestic(puzzle) << std::endl;
 }
@@ -56,5 +56,5 @@ int SlidingPuzzleHeurestic(const SlidingPuzzle& puzzle)
 			manhattanDistance += abs((puzzleValue - 1) / puzzleSize - y);
 		}
 	}
-	return manhattanDistance;
+	return manhattanDistance * 5 + puzzle.totalStep * 1;
 }

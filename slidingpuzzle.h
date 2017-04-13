@@ -1,6 +1,8 @@
 #ifndef SLIDINGPUZZLE_H
 #define SLIDINGPUZZLE_H
 
+#include <vector>
+
 class SlidingPuzzle
 {
 public:
@@ -20,6 +22,9 @@ public:
 	bool moveByPos(int i);
 	const int *getIndexData() const;
 	int getSize() const;
+	void RecordStep(char action);
+	bool Undo();
+	bool Redo();
 
 	int totalStep;
 
@@ -30,6 +35,8 @@ private:
 	int *indexData;
 	int zeroPositionX;
 	int zeroPositionY;
+	bool isRecordStep;
+	std::vector<char> step;
 };
 
 #endif // SLIDINGPUZZLE_H
