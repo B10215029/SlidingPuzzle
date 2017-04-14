@@ -2,8 +2,9 @@
 #include <iostream>
 #include <algorithm>
 
-BestFirstSearch::BestFirstSearch(SlidingPuzzle &puzzle)
+BestFirstSearch::BestFirstSearch(SlidingPuzzle &puzzle, double hw, double gw) : hWeight(hw), gWeight(gw)
 {
+	puzzleQueue = std::priority_queue<SlidingPuzzle, std::vector<SlidingPuzzle>, std::function<bool(const SlidingPuzzle&, const SlidingPuzzle&)>>(std::bind(&BestFirstSearch::SlidingPuzzleCompare, *this, std::placeholders::_1, std::placeholders::_2));
 	puzzleQueue.push(puzzle);
 
 	int i = 0;
@@ -16,7 +17,6 @@ BestFirstSearch::BestFirstSearch(SlidingPuzzle &puzzle)
 			pastPuzzle.push_back(puzzleQueue.top());
 			puzzleQueue.pop();
 		}
-		std::cout << SlidingPuzzleHeurestic(pastPuzzle.back()) << ": ";
 		if (pastPuzzle.back().checkFinish()) {
 			puzzle = pastPuzzle.back();
 			break;
@@ -37,12 +37,19 @@ BestFirstSearch::BestFirstSearch(SlidingPuzzle &puzzle)
 		if(puzzleRight.moveRight() && std::find(pastPuzzle.begin(), pastPuzzle.end(), puzzleRight) == pastPuzzle.end()) {
 			puzzleQueue.push(puzzleRight);
 		}
-		std::cout << "state:" << i++ << std::endl;
+		if (!(i++%1000)) {
+			std::cout << SlidingPuzzleHeurestic(pastPuzzle.back()) << ", " << "state:" << i << std::endl;
+		}
 	}
-	std::cout << SlidingPuzzleHeurestic(puzzle) << std::endl;
+	std::cout << SlidingPuzzleHeurestic(puzzle) << ", " << "state:" << i << std::endl;
 }
 
-int SlidingPuzzleHeurestic(const SlidingPuzzle& puzzle)
+bool BestFirstSearch::SlidingPuzzleCompare(const SlidingPuzzle& lhs, const SlidingPuzzle& rhs) const
+{
+	return SlidingPuzzleHeurestic(lhs) > SlidingPuzzleHeurestic(rhs);
+}
+
+double BestFirstSearch::SlidingPuzzleHeurestic(const SlidingPuzzle& puzzle) const
 {
 	const int* indexData = puzzle.getIndexData();
 	int puzzleSize = puzzle.getSize();
@@ -56,5 +63,5 @@ int SlidingPuzzleHeurestic(const SlidingPuzzle& puzzle)
 			manhattanDistance += abs((puzzleValue - 1) / puzzleSize - y);
 		}
 	}
-	return manhattanDistance * 5 + puzzle.totalStep * 1;
+	return manhattanDistance * hWeight + puzzle.totalStep * gWeight;
 }
