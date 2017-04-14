@@ -1,5 +1,6 @@
 #include "bestfirstsearch.h"
 #include <iostream>
+#include <algorithm>
 
 BestFirstSearch::BestFirstSearch(SlidingPuzzle &puzzle)
 {
