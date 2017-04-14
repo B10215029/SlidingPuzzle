@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QKeyEvent>
-#include <eventlog.h>
+#include "eventlog.h"
+#include <fstream>
+#include "bestfirstsearch.h"
 
 //static EventLog mlog;
 
@@ -40,17 +42,28 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 		else if (keyEvent->key() == Qt::Key_Right) {
 			puzzle->moveRight();
 		}
+		else if (keyEvent->key() == Qt::Key_Z) {
+			puzzle->Undo();
+		}
+		else if (keyEvent->key() == Qt::Key_X) {
+			puzzle->Redo();
+		}
 		else {
 			return QObject::eventFilter(obj, event);
 		}
-		ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
-		ui->widget->SetIndex(puzzle->getIndexData());
-		ui->widget->update();
-		if (puzzle->checkFinish())
-			ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
+		updatePuzzleInfo();
 		return true;
 	}
 	return QObject::eventFilter(obj, event);
+}
+
+void MainWindow::updatePuzzleInfo()
+{
+	ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
+	ui->widget->SetIndex(puzzle->getIndexData());
+	ui->widget->update();
+	if (puzzle->checkFinish())
+		ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -61,34 +74,26 @@ void MainWindow::on_pushButton_clicked()
 		return;
 	}
 	puzzle = new SlidingPuzzle(ui->lineEdit->text().toInt());
-	puzzle->shuffle(100);
+	puzzle->shuffle(1000);
 	ui->widget->SetSize(puzzle->getSize(), puzzle->getSize());
-	ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
-	ui->widget->SetIndex(puzzle->getIndexData());
-	ui->widget->update();
-	if (puzzle->checkFinish())
-		ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
+	updatePuzzleInfo();
 
-	aco->init(2, 2, 2, 0.5f, 2, 100);
-	aco->start(*puzzle, false);
-	vector<ACO<SlidingPuzzle>::PathInfo> path = aco->shortestPath();
-	printf("sp size: %d\n", path.size());
-	if (path.size())
-		ui->widget->SetIndex(path.back().to.getIndexData());
-	ui->widget->update();
-	if (path.size() && path.back().to.checkFinish())
-		ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(path.back().to.totalStep));
+//	aco->init(2, 2, 2, 0.5f, 2, 100);
+//	aco->start(*puzzle, false);
+//	vector<ACO<SlidingPuzzle>::PathInfo> path = aco->shortestPath();
+//	printf("sp size: %d\n", path.size());
+//	if (path.size())
+//		ui->widget->SetIndex(path.back().to.getIndexData());
+//	ui->widget->update();
+//	if (path.size() && path.back().to.checkFinish())
+//		ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(path.back().to.totalStep));
 }
 
 void MainWindow::on_puzzle_position_click(int i)
 {
 	if (puzzle) {
 		puzzle->moveByPos(i);
-		ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
-		ui->widget->SetIndex(puzzle->getIndexData());
-		ui->widget->update();
-		if (puzzle->checkFinish())
-			ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
+		updatePuzzleInfo();
 	}
 }
 
@@ -96,10 +101,30 @@ void MainWindow::on_pushButton_2_clicked()
 {
 	if (puzzle) {
 		puzzle->shuffle(ui->lineEdit_2->text().toInt());
-		ui->label->setText(QString("使用步數: %1").arg(puzzle->totalStep));
-		ui->widget->SetIndex(puzzle->getIndexData());
-		ui->widget->update();
-		if (puzzle->checkFinish())
-			ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
+		updatePuzzleInfo();
+	}
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+	if (puzzle) {
+		BestFirstSearch bfs(*puzzle);
+		updatePuzzleInfo();
+	}
+}
+
+void MainWindow::on_pushButton_5_clicked()
+{
+	if (puzzle) {
+		puzzle->Undo();
+		updatePuzzleInfo();
+	}
+}
+
+void MainWindow::on_pushButton_4_clicked()
+{
+	if (puzzle) {
+		puzzle->Redo();
+		updatePuzzleInfo();
 	}
 }
