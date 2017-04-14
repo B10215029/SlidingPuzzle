@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#define FOR(i,n) for(int i=0;i<n;++i)
+#define FOR(i, n) for (int i=0; i < (int)n; ++i)
 
 template<typename T>
 class ACO
@@ -26,7 +26,7 @@ public:
 	} PathInfo;
 
 	void init(int n, float a, float b, float r, float q, int m, float e=0.01f);
-	void start(T from, bool mc=true); // default MONTE_CARLO is true
+	virtual void start(T from, bool mc=true); // default MONTE_CARLO is true
 	vector<PathInfo> shortestPath() { return shortest_path; }
 
 protected:
@@ -49,9 +49,9 @@ protected:
 
 	bool converge(float current_min_path); // min path is general usage (tree depth)
 	virtual bool isComplete(T to) = 0; // compare with the complete status
-	T evaluate(T from, vector<PathInfo> walk); // depends on social_influence
-	virtual vector<T> toStates(T from, vector<PathInfo> walk) = 0; // combine to evaluate (expand tree)
-	float visibility(T from, T to) { return 1; } // depends on application, default is 1
+	virtual T evaluate(T from, vector<PathInfo> & walk); // depends on social_influence
+	virtual vector<T> toStates(T from, vector<PathInfo> & walk) = 0; // combine to evaluate (expand tree)
+	virtual float visibility(T from, T to) { return 1; } // depends on application, default is 1
 	void updatePheromone(vector< vector<PathInfo> > & all_ants_walks);
 };
 
@@ -65,6 +65,7 @@ void ACO<T>::init(int n, float a, float b, float r, float q, int m, float e) {
 	max_iteration = m;
 	current_iteration = 0;
 	converge_epsilon = e;
+	last_min_path = 0;
 	shortest_path.clear();
 	social_influence.clear();
 }
@@ -73,39 +74,50 @@ template<typename T>
 void ACO<T>::start(T from, bool mc) {
 	MONTE_CARLO = mc;
 	float current_min_path = 9999;
-	cout << "start aco" << endl;
-	while(current_iteration++ < max_iteration && !converge(current_min_path)) {
-		cout << "\titer: " << current_iteration << endl;
 
+	while(current_iteration++ < max_iteration && !converge(current_min_path)) {
+		cout << "iter: " << current_iteration << endl;
+		cout.flush();
 		last_min_path = current_min_path;
 
 		vector< vector<PathInfo> > all_ants_walks;
-		FOR(i, number_of_ants) {
-			cout << "\t\tant: " << i << endl;
+//		#pragma omp parallel for
+		FOR (i, number_of_ants) {
+			bool bad_path = false;
+			cout << "\tant: " << i + 1 << ",";
+			cout.flush();
 			T current = from;
-//			cout << "\t\toriginal state: " << &from << endl;
-//			cout << "\t\tcurrent state: " << &current << endl;
-//			cout << "\t\tequal? " << (from == current) << endl;
 			vector<PathInfo> walk;
-			while(!isComplete(walk.size() == 0 ? from : walk.back().to)) { // equal to 'best'
-//				printf("[current] %x\n", current);
+			while (!isComplete(walk.size() == 0 ? from : walk.back().to)) {
 				T best = evaluate(current, walk);
+				if (best == NULL) {
+					bad_path = true;
+					break;
+				}
 				PathInfo path = {
-					.pheromone = pheromone_left_per_ant,
-					.visibility = visibility(current, best),
-					.from = current,
-					.to = best
+					pheromone_left_per_ant,
+					visibility(current, best),
+					current,
+					best
 				};
 				current = best;
 				walk.push_back(path);
-//				printf("[walk size] %d\n", walk.size());
 			}
-			printf("[walk size] %d\n", walk.size());
-			if (walk.size())
-				all_ants_walks.push_back(walk);
-			printf("\t\tall_ants_walks size: %d\n", all_ants_walks.size());
+			cout << "\t[walk size]" << walk.size() << endl;
+			cout.flush();
+			if (walk.size()) {
+				if (bad_path) {
+					FOR (k, walk.size()) {
+						walk[k].pheromone = - walk[k].pheromone / 2;
+					}
+					all_ants_walks.push_back(walk);
+				}
+				else
+					all_ants_walks.push_back(walk);
+			}
+//			printf("\t\tall_ants_walks size: %d\n", (int)all_ants_walks.size());
 
-			if (current_min_path > walk.size()) {
+			if (current_min_path > walk.size() && !bad_path) {
 				current_min_path = walk.size();
 				shortest_path = walk;
 			}
@@ -120,15 +132,13 @@ bool ACO<T>::converge(float current_min_path) {
 }
 
 template<typename T>
-T ACO<T>::evaluate(T from, vector<PathInfo> walk) {
-	cout << "evaluate" << endl;
+T ACO<T>::evaluate(T from, vector<PathInfo> & walk) {
 	vector<T> to = toStates(from, walk);
-	printf("\t\t\texpand %d states\n", to.size());
 	vector<float> weights;
 	float sum = 0, max = 0;
 	int maxi;
-	FOR(i, to.size()) {
-		for(const auto & sipath: social_influence) {
+	FOR (i, to.size()) {
+		for (const auto & sipath: social_influence) {
 			if (from == sipath.from && to[i] == sipath.to) {
 				float weight = pow(sipath.pheromone, alpha) * pow(sipath.visibility, beta);
 				weights.push_back(weight);
@@ -146,7 +156,7 @@ T ACO<T>::evaluate(T from, vector<PathInfo> walk) {
 		return to[rand() % to.size()];
 	else if (MONTE_CARLO) {
 		float r = (float) (rand() / (RAND_MAX / sum));
-		FOR(i, weights.size()) {
+		FOR (i, weights.size()) {
 			r -= weights[i];
 			if (r < 0)
 				return to[i];
@@ -157,20 +167,27 @@ T ACO<T>::evaluate(T from, vector<PathInfo> walk) {
 
 template<typename T>
 void ACO<T>::updatePheromone(vector< vector<PathInfo> > & all_ants_walks) {
-	for(auto & sipath: social_influence)
-		sipath.pheromone *= pheromone_left_ratio;
+	FOR (i, social_influence.size())
+		social_influence[i].pheromone *= pheromone_left_ratio;
 
-	for(const auto & walk: all_ants_walks) {
-		for(const auto & path: walk) {
-			for(auto & sipath: social_influence) {
-				if (sipath.from == path.from && sipath.to == path.to) {
-					sipath.pheromone += path.pheromone;
+	for (const auto & walk: all_ants_walks) {
+		for (const auto & path: walk) {
+			FOR (i, social_influence.size()) {
+				if (social_influence[i].from == path.from && social_influence[i].to == path.to) {
+					social_influence[i].pheromone += path.pheromone / walk.size();
 					goto mk;
 				}
 			}
 			social_influence.push_back(path);
 			mk:
 			continue;
+		}
+	}
+
+	FOR (i, social_influence.size()) {
+		if (social_influence[i].pheromone < 0 || social_influence[i].pheromone < converge_epsilon) {
+			social_influence.erase(social_influence.begin() + i);
+			++i;
 		}
 	}
 }

@@ -23,22 +23,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 CONFIG += c++11
+QMAKE_CXXFLAGS += -fopenmp
+LIBS += -fopenmp
 
 SOURCES += main.cpp\
 	mainwindow.cpp \
 	puzzleview.cpp \
 	slidingpuzzle.cpp \
-#	ACO/ACO.cpp \
 	ACO/SlidingPuzzleACO.cpp \
-    eventlog.cpp \
-    bestfirstsearch.cpp
+	eventlog.cpp \
+	bestfirstsearch.cpp
 
 HEADERS += mainwindow.h \
 	puzzleview.h \
 	slidingpuzzle.h \
 	ACO/ACO.hpp \
 	ACO/SlidingPuzzleACO.h \
-    eventlog.h \
-    bestfirstsearch.h
+	eventlog.h \
+	bestfirstsearch.h
 
 FORMS += mainwindow.ui

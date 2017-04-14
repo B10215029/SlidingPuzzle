@@ -5,8 +5,6 @@
 #include <fstream>
 #include "bestfirstsearch.h"
 
-//static EventLog mlog;
-
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
@@ -16,9 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	puzzle = NULL;
 	connect(ui->widget, SIGNAL(PositionClick(int)), this, SLOT(on_puzzle_position_click(int)));
 	aco = new SlidingPuzzleACO();
-
-//	mlog.write("MainWindow::MainWindow()");
-//	mlog.print();
 }
 
 MainWindow::~MainWindow()
@@ -63,7 +58,7 @@ void MainWindow::updatePuzzleInfo()
 	ui->widget->SetIndex(puzzle->getIndexData());
 	ui->widget->update();
 	if (puzzle->checkFinish())
-		ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep));
+		ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(puzzle->totalStep), 5000);
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -76,17 +71,8 @@ void MainWindow::on_pushButton_clicked()
 	puzzle = new SlidingPuzzle(ui->lineEdit->text().toInt());
 	puzzle->shuffle(1000);
 	ui->widget->SetSize(puzzle->getSize(), puzzle->getSize());
+	ui->statusBar->showMessage("New game~", 5000);
 	updatePuzzleInfo();
-
-//	aco->init(2, 2, 2, 0.5f, 2, 100);
-//	aco->start(*puzzle, false);
-//	vector<ACO<SlidingPuzzle>::PathInfo> path = aco->shortestPath();
-//	printf("sp size: %d\n", path.size());
-//	if (path.size())
-//		ui->widget->SetIndex(path.back().to.getIndexData());
-//	ui->widget->update();
-//	if (path.size() && path.back().to.checkFinish())
-//		ui->statusBar->showMessage(QString("You use %1 step win the game, you are stupid!").arg(path.back().to.totalStep));
 }
 
 void MainWindow::on_puzzle_position_click(int i)
@@ -108,7 +94,14 @@ void MainWindow::on_pushButton_2_clicked()
 void MainWindow::on_pushButton_3_clicked()
 {
 	if (puzzle) {
-		BestFirstSearch bfs(*puzzle);
+//		BestFirstSearch bfs(*puzzle, 100);
+		aco->init(6, 2, 1, 0.5f, 9, 100);
+		aco->start(*puzzle, false);
+		vector<ACO<SlidingPuzzle>::PathInfo> path = aco->shortestPath();
+		cout << "sp size: " << path.size() << endl;
+		cout.flush();
+		if (path.size())
+			*puzzle = path.back().to;
 		updatePuzzleInfo();
 	}
 }
