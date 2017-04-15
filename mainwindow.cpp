@@ -130,7 +130,8 @@ void MainWindow::on_pushButton_6_clicked()
 			ui->statusBar->showMessage("Why do not you input a number?", 5000);
 			return;
 		}
-		BestFirstSearch bfs(*puzzle, ui->lineEdit->text().toInt());
+		ui->statusBar->showMessage(QString("Run BFS use %1").arg(ui->lineEdit_3->text().toInt()), 5000);
+		BestFirstSearch bfs(*puzzle, ui->lineEdit_3->text().toInt());
 		updatePuzzleInfo();
 	}
 }
