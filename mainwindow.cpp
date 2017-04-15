@@ -95,7 +95,7 @@ void MainWindow::on_pushButton_3_clicked()
 {
 	if (puzzle) {
 //		BestFirstSearch bfs(*puzzle, 100);
-		aco->init(6, 2, 1, 0.5f, 9, 100);
+		aco->init(6, 2, 3, 0.5f, 3, 100);
 		aco->start(*puzzle, false);
 		vector<ACO<SlidingPuzzle>::PathInfo> path = aco->shortestPath();
 		cout << "sp size: " << path.size() << endl;

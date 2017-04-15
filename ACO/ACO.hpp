@@ -81,16 +81,25 @@ void ACO<T>::start(T from, bool mc) {
 		last_min_path = current_min_path;
 
 		vector< vector<PathInfo> > all_ants_walks;
-//		#pragma omp parallel for
+		#pragma omp parallel for
 		FOR (i, number_of_ants) {
 			bool bad_path = false;
-			cout << "\tant: " << i + 1 << ",";
+			cout << "\tant: " << i + 1 << endl;
 			cout.flush();
 			T current = from;
 			vector<PathInfo> walk;
 			while (!isComplete(walk.size() == 0 ? from : walk.back().to)) {
 				T best = evaluate(current, walk);
 				if (best == NULL) {
+					if (i == number_of_ants - 1) {
+						cout << "\tredo: " << i + 1 << endl;
+						cout.flush();
+
+						bad_path = false;
+						current = from;
+						walk.clear();
+						continue;
+					}
 					bad_path = true;
 					break;
 				}
@@ -103,23 +112,14 @@ void ACO<T>::start(T from, bool mc) {
 				current = best;
 				walk.push_back(path);
 			}
-			cout << "\t[walk size]" << walk.size() << endl;
+			cout << "\t[walk size] " << walk.size() << endl;
 			cout.flush();
-			if (walk.size()) {
-				if (bad_path) {
-					FOR (k, walk.size()) {
-						walk[k].pheromone = - walk[k].pheromone / 2;
-					}
-					all_ants_walks.push_back(walk);
+			if (walk.size() && !bad_path) {
+				all_ants_walks.push_back(walk);
+				if (current_min_path > walk.size()) {
+					current_min_path = walk.size();
+					shortest_path = walk;
 				}
-				else
-					all_ants_walks.push_back(walk);
-			}
-//			printf("\t\tall_ants_walks size: %d\n", (int)all_ants_walks.size());
-
-			if (current_min_path > walk.size() && !bad_path) {
-				current_min_path = walk.size();
-				shortest_path = walk;
 			}
 		}
 		updatePheromone(all_ants_walks);
@@ -135,34 +135,46 @@ template<typename T>
 T ACO<T>::evaluate(T from, vector<PathInfo> & walk) {
 	vector<T> to = toStates(from, walk);
 	vector<float> weights;
-	float sum = 0, max = 0;
-	int maxi;
+	float sum = 0, max = -9999;
+
 	FOR (i, to.size()) {
-		for (const auto & sipath: social_influence) {
+		bool find_social = false;
+		for(const auto & sipath: social_influence) {
 			if (from == sipath.from && to[i] == sipath.to) {
+				find_social = true;
 				float weight = pow(sipath.pheromone, alpha) * pow(sipath.visibility, beta);
 				weights.push_back(weight);
 				sum += weight;
-				if (weight > max) {
+				if (weight > max)
 					max = weight;
-					maxi = i;
-				}
 				break;
 			}
 		}
+		if (!find_social) {
+			float weight = pow(visibility(from, to[i]), beta);
+			weights.push_back(weight);
+			sum += weight;
+			if (weight > max)
+				max = weight;
+		}
 	}
+
+	if (to.size() == 0)
+		return NULL;
 	srand(time(NULL));
-	if (sum == 0)
-		return to[rand() % to.size()];
-	else if (MONTE_CARLO) {
-		float r = (float) (rand() / (RAND_MAX / sum));
+	if (MONTE_CARLO) {
+		float r = (float)rand() / (float)(RAND_MAX / sum);
 		FOR (i, weights.size()) {
 			r -= weights[i];
 			if (r < 0)
 				return to[i];
 		}
 	}
-	return to[maxi];
+	vector<T> to_max;
+	FOR (i, weights.size())
+		if (weights[i] == max)
+			to_max.push_back(to[i]);
+	return to_max[rand() % to_max.size()];
 }
 
 template<typename T>
