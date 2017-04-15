@@ -8,6 +8,7 @@ class SlidingPuzzle
 public:
 	SlidingPuzzle(int row = 4);
 	SlidingPuzzle(const SlidingPuzzle &oldPuzzle);
+	SlidingPuzzle(const char* fileName);
 	~SlidingPuzzle();
 	SlidingPuzzle& operator=(const SlidingPuzzle &oldPuzzle);
 	bool operator==(const SlidingPuzzle &oldPuzzle) const;
@@ -25,6 +26,7 @@ public:
 	void RecordStep(char action);
 	bool Undo();
 	bool Redo();
+	bool SaveToFile(const char* fileName);
 
 	int totalStep;
 

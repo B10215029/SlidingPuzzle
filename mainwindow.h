@@ -34,6 +34,10 @@ private slots:
 
 	void on_pushButton_6_clicked();
 
+	void on_actionSave_Puzzle_triggered();
+
+	void on_actionOpen_Puzzle_triggered();
+
 private:
 	void updatePuzzleInfo();
 	Ui::MainWindow *ui;

@@ -4,6 +4,7 @@
 #include "eventlog.h"
 #include <fstream>
 #include "bestfirstsearch.h"
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -124,7 +125,28 @@ void MainWindow::on_pushButton_4_clicked()
 void MainWindow::on_pushButton_6_clicked()
 {
 	if (puzzle) {
-		BestFirstSearch bfs(*puzzle, 5);
+		bool ok;
+		if (ui->lineEdit_3->text().toInt(&ok) < 0 || !ok) {
+			ui->statusBar->showMessage("Why do not you input a number?", 5000);
+			return;
+		}
+		BestFirstSearch bfs(*puzzle, ui->lineEdit->text().toInt());
 		updatePuzzleInfo();
 	}
+}
+
+void MainWindow::on_actionSave_Puzzle_triggered()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, "Save Puzzle");
+	if (puzzle) {
+		puzzle->SaveToFile(fileName.toLatin1());
+	}
+}
+
+void MainWindow::on_actionOpen_Puzzle_triggered()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, "Open Puzzle");
+	puzzle = new SlidingPuzzle((const char*)fileName.toLatin1());
+	ui->widget->SetSize(puzzle->getSize(), puzzle->getSize());
+	updatePuzzleInfo();
 }

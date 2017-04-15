@@ -1,6 +1,7 @@
 #include "slidingpuzzle.h"
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -14,6 +15,27 @@ SlidingPuzzle::SlidingPuzzle(const SlidingPuzzle &oldPuzzle)
 {
 //	printf("%x constructor copy from %x\n", this, oldPuzzle);
 	*this = oldPuzzle;
+}
+
+SlidingPuzzle::SlidingPuzzle(const char* fileName)
+{
+	std::ifstream file(fileName);
+	if (!file) {
+		*this = SlidingPuzzle(3);
+	}
+	file >> rowSize >> isRecordStep >> totalStep;
+	file >> zeroPositionX >> zeroPositionY;
+	indexData = new int[rowSize * rowSize];
+	for (int i = 0; i < rowSize * rowSize; i++)
+		file >> indexData[i];
+	int stepSize, a;
+	file >> stepSize;
+	step.clear();
+	for (int i = 0; i < stepSize; i++) {
+		file >> a;
+		step.push_back(a);
+	}
+	file.close();
 }
 
 SlidingPuzzle::~SlidingPuzzle()
@@ -251,4 +273,22 @@ void SlidingPuzzle::Index2XY(int i, int *x, int *y)
 {
 	*x = i % rowSize;
 	*y = i / rowSize;
+}
+
+bool SlidingPuzzle::SaveToFile(const char* fileName)
+{
+	std::ofstream file(fileName);
+	if (!file) {
+		return false;
+	}
+	file << rowSize << " " << isRecordStep << " " << totalStep << std::endl;
+	file << zeroPositionX << " " << zeroPositionY << std::endl;
+	for (int i = 0; i < rowSize * rowSize; i++)
+		file << indexData[i] << " ";
+	file << std::endl << step.size();
+	for (int i = 0; i < step.size(); i++) {
+		file << ' ' << (int)step[i];
+	}
+	file << std::endl;
+	file.close();
 }

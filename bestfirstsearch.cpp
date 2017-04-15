@@ -1,7 +1,7 @@
 #include "bestfirstsearch.h"
 #include <iostream>
 #include <algorithm>
-#define HILL_CLIMBING
+//#define HILL_CLIMBING
 
 BestFirstSearch::BestFirstSearch(SlidingPuzzle &puzzle, double hw, double gw) : hWeight(hw), gWeight(gw)
 {
