@@ -73,7 +73,14 @@
       <item>
        <widget class="QPushButton" name="pushButton_3">
         <property name="text">
-         <string>Use AI</string>
+         <string>Use ACO</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_6">
+        <property name="text">
+         <string>Use BFS</string>
         </property>
        </widget>
       </item>
